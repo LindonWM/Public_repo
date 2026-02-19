@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A personal portfolio website showcasing web development projects, skills in HTML, CSS, JavaScript, and more, along with contact information.">
+    <title>My Portfolio - Web Developer</title>
+    <link rel="stylesheet" href="3_Introduction_to_Web_Development/styles_zal.css">
+</head>
+<body>
+    <header role="banner" id="home">
+        <h1>Welcome to My Page</h1>
+        <button class="hamburger" aria-label="Toggle navigation menu">☰</button>
+        <nav role="navigation">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about-me">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main role="main">
+        <article>
+            <h2>About This Page</h2>
+            <p>This is a sample article with semantic HTML elements.</p>
+        </article>
+        <section id="about-me">
+            <h2>About Me</h2>
+            <p>Here you can write some information about yourself.</p>
+        </section>
+        <section id="skills">
+            <h2>Skills</h2>
+            <ul>
+                <li>HTML5</li>
+                <li>CSS3</li>
+                <li>JavaScript</li>
+                <li>React</li>
+                <li>Node.js</li>
+                <li>Express.js</li>
+                <li>MongoDB</li>
+                <li>Git</li>
+                <li>GitHub</li>
+                <li>Responsive Web Design</li>
+                <li>RESTful APIs</li>
+                <li>Version Control</li>
+            </ul>
+        </section>
+        <section id="projects">
+            <h2>My Projects</h2>
+            <div class="filter-buttons">
+                <button onclick="filterProjects('all')">All</button>
+                <button onclick="filterProjects('web')">Web</button>
+                <button onclick="filterProjects('design')">Design</button>
+            </div>
+            <article data-category="web">
+                <h3>Project One</h3>
+                <figure>
+                    <img src="3_Introduction_to_Web_Development/Example.jpg" alt="Screenshot of Project One, a web application demonstrating HTML, CSS, and JavaScript skills">
+                    <figcaption>Screenshot of Project One</figcaption>
+                </figure>
+                <p>This is a description of the first project. It showcases various skills and technologies used.</p>
+            </article>
+            <article data-category="design">
+                <h3>Project Two</h3>
+                <figure>
+                    <img src="3_Introduction_to_Web_Development/Example.jpg" alt="Screenshot of Project Two, showcasing innovative design solutions and user interface features">
+                    <figcaption>Screenshot of Project Two</figcaption>
+                </figure>
+                <p>This is a description of the second project. It highlights innovative solutions and design.</p>
+            </article>
+        </section>
+        <section id="contact">
+            <h2>Contact Me</h2>
+            <form action="#" method="post" role="form" aria-label="Contact Form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+                
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+    </main>
+    <footer role="contentinfo">
+        <p>&copy; 2026 My Website</p>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <span class="close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+    </div>
+
+    <script src="3_Introduction_to_Web_Development/script_zal.js"></script>
+</body>
+</html>
