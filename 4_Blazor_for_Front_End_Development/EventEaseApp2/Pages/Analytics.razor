@@ -1,0 +1,669 @@
+@page "/analytics"
+@using EventEaseApp2.Services
+@inject AttendanceTrackerService AttendanceTracker
+@inject UserSessionService UserSession
+@inject EventService EventService
+
+<PageTitle>Event Analytics Dashboard</PageTitle>
+
+<div class="analytics-container">
+    <div class="analytics-header">
+        <h1 class="analytics-title"><span class="bi bi-bar-chart-fill"></span> Analytics Dashboard</h1>
+        <p class="analytics-subtitle">Real-time event participation insights</p>
+    </div>
+
+    @if (SystemStats != null)
+    {
+        <!-- System Overview Cards -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon bi bi-person-check-fill"></span>
+                    <div class="metric-info">
+                        <p class="metric-label">Total Registrations</p>
+                        <p class="metric-value">@SystemStats.TotalRegistrations</p>
+                    </div>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon bi bi-people-fill"></span>
+                    <div class="metric-info">
+                        <p class="metric-label">Unique Users</p>
+                        <p class="metric-value">@SystemStats.UniqueUsers</p>
+                    </div>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: 85%;"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon bi bi-calendar-event-fill"></span>
+                    <div class="metric-info">
+                        <p class="metric-label">Total Events</p>
+                        <p class="metric-value">@SystemStats.UniqueEvents</p>
+                    </div>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: 70%;"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon bi bi-check-circle-fill"></span>
+                    <div class="metric-info">
+                        <p class="metric-label">Attendance Rate</p>
+                        <p class="metric-value">@SystemStats.OverallAttendanceRate.ToString("F1")%</p>
+                    </div>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: @SystemStats.OverallAttendanceRate%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="analytics-columns">
+            <!-- Left Column: Top Events -->
+            <div class="analytics-section">
+                <div class="section-header">
+                    <span class="bi bi-fire"></span>
+                    <h2>Top Trending Events</h2>
+                </div>
+
+                @if (TopEvents.Count == 0)
+                {
+                    <div class="empty-state">
+                        <span class="bi bi-graph-up"></span>
+                        <p>No event data available yet</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="events-list">
+                        @foreach (var eventStats in TopEvents)
+                        {
+                            var eventInfo = EventService.GetEventById(eventStats.EventId);
+                            <div class="event-item">
+                                <div class="event-rank">@(TopEvents.IndexOf(eventStats) + 1)</div>
+                                <div class="event-details">
+                                    <div class="event-name">@(eventInfo?.Name ?? $"Event #{eventStats.EventId}")</div>
+                                    <div class="event-attendees">
+                                        <span class="bi bi-people-fill"></span>
+                                        @eventStats.RegistrationCount registrations
+                                    </div>
+                                </div>
+                                <div class="event-bar">
+                                    <div class="bar-fill" style="width: @((eventStats.RegistrationCount * 100 / TopEvents[0].RegistrationCount))%;"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Right Column: User Activity -->
+            <div class="analytics-section">
+                <div class="section-header">
+                    <span class="bi bi-clock-history"></span>
+                    <h2>Recent Registrations</h2>
+                </div>
+
+                @if (RecentRegistrations.Count == 0)
+                {
+                    <div class="empty-state">
+                        <span class="bi bi-inbox"></span>
+                        <p>No registrations yet</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="registrations-list">
+                        @foreach (var record in RecentRegistrations)
+                        {
+                            var eventInfo = EventService.GetEventById(record.EventId);
+                            <div class="registration-item">
+                                <div class="registration-avatar">
+                                    <span class="bi bi-person-fill"></span>
+                                </div>
+                                <div class="registration-content">
+                                    <div class="registration-name">@record.FullName</div>
+                                    <div class="registration-meta">
+                                        <span class="meta-badge">@(eventInfo?.Name ?? $"Event #{record.EventId}")</span>
+                                        <span class="meta-time">@record.RegistrationDate.ToString("MMM dd, HH:mm")</span>
+                                    </div>
+                                </div>
+                                <div class="registration-status">
+                                    @if (record.IsAttended)
+                                    {
+                                        <span class="status-badge attended">
+                                            <span class="bi bi-check-circle-fill"></span> Attended
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge registered">
+                                            <span class="bi bi-bookmark-fill"></span> Registered
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- User Session Info -->
+        @if (UserSession.IsSessionActive())
+        {
+            <div class="analytics-section user-session-section">
+                <div class="section-header">
+                    <span class="bi bi-person-circle"></span>
+                    <h2>Your Statistics</h2>
+                </div>
+
+                @{
+                    var userStats = AttendanceTracker.GetUserStats(UserSession.Email);
+                    var userAttendance = AttendanceTracker.GetUserAttendance(UserSession.Email);
+                }
+
+                <div class="user-stats-grid">
+                    <div class="user-stat-card">
+                        <span class="stat-icon bi bi-calendar2-check-fill"></span>
+                        <p class="stat-label">Events Registered</p>
+                        <p class="stat-value">@userStats.TotalRegistered</p>
+                    </div>
+                    <div class="user-stat-card">
+                        <span class="stat-icon bi bi-check-lg"></span>
+                        <p class="stat-label">Events Attended</p>
+                        <p class="stat-value">@userStats.TotalAttended</p>
+                    </div>
+                    <div class="user-stat-card">
+                        <span class="stat-icon bi bi-percent"></span>
+                        <p class="stat-label">Attendance Rate</p>
+                        <p class="stat-value">@userStats.AttendancePercentage.ToString("F0")%</p>
+                    </div>
+                </div>
+
+                @if (userAttendance.Count > 0)
+                {
+                    <div class="user-events-list">
+                        <h3>Your Event History</h3>
+                        @foreach (var record in userAttendance.OrderByDescending(x => x.RegistrationDate).Take(10))
+                        {
+                            var eventInfo = EventService.GetEventById(record.EventId);
+                            <div class="user-event-item">
+                                <div class="user-event-info">
+                                    <span class="event-title">@(eventInfo?.Name ?? $"Event #{record.EventId}")</span>
+                                    <span class="event-timestamp">@record.RegistrationDate.ToString("MMMM dd, yyyy HH:mm")</span>
+                                </div>
+                                <span class="event-attended @(record.IsAttended ? "yes" : "pending")">
+                                    @(record.IsAttended ? "✓ Attended" : "🔔 Pending")
+                                </span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+<style>
+    .analytics-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+
+    .analytics-header {
+        text-align: center;
+        color: white;
+        margin-bottom: 3rem;
+    }
+
+    .analytics-title {
+        font-size: 2.5rem;
+        margin: 0;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .analytics-title .bi {
+        font-size: 2.8rem;
+    }
+
+    .analytics-subtitle {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .metric-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .metric-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .metric-icon {
+        font-size: 2rem;
+        color: #667eea;
+        min-width: 2rem;
+    }
+
+    .metric-info {
+        flex: 1;
+    }
+
+    .metric-label {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #999;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+        margin: 0.5rem 0 0 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .metric-bar {
+        height: 6px;
+        background: #f0f0f0;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .metric-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 3px;
+        transition: width 0.5s ease;
+    }
+
+    .analytics-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    @@media (max-width: 1200px) {
+        .analytics-columns {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .analytics-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .section-header span {
+        font-size: 1.5rem;
+        color: #667eea;
+    }
+
+    .section-header h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: #333;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #999;
+    }
+
+    .empty-state .bi {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .events-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .event-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f9f9f9;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .event-item:hover {
+        background: #f0f0f0;
+    }
+
+    .event-rank {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .event-details {
+        flex: 1;
+    }
+
+    .event-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .event-attendees {
+        font-size: 0.85rem;
+        color: #999;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .event-bar {
+        width: 80px;
+        height: 6px;
+        background: #e0e0e0;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transition: width 0.3s ease;
+    }
+
+    .registrations-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .registration-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f9f9f9;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .registration-item:hover {
+        background: #f0f0f0;
+    }
+
+    .registration-avatar {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .registration-content {
+        flex: 1;
+    }
+
+    .registration-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .registration-meta {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: #999;
+    }
+
+    .meta-badge {
+        background: #e8f0fe;
+        color: #667eea;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    .meta-time {
+        opacity: 0.7;
+    }
+
+    .registration-status {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-badge.attended {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-badge.registered {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    .user-session-section {
+        margin-top: 3rem;
+    }
+
+    .user-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @@media (max-width: 768px) {
+        .user-stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .user-stat-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .stat-icon {
+        font-size: 1.8rem;
+        color: #667eea;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.85rem;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    .user-events-list {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .user-events-list h3 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .user-event-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .user-event-item:last-child {
+        border-bottom: none;
+    }
+
+    .user-event-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .event-title {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .event-timestamp {
+        font-size: 0.8rem;
+        color: #999;
+    }
+
+    .event-attended {
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .event-attended.yes {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .event-attended.pending {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+</style>
+
+@code {
+    private SystemAttendanceStats? SystemStats;
+    private List<EventRegistrationStats> TopEvents = new();
+    private List<AttendanceRecord> RecentRegistrations = new();
+
+    protected override void OnInitialized()
+    {
+        LoadAnalyticsData();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AttendanceTracker.OnAttendanceChanged += RefreshData;
+        }
+    }
+
+    private void LoadAnalyticsData()
+    {
+        SystemStats = AttendanceTracker.GetSystemStats();
+        TopEvents = AttendanceTracker.GetMostPopularEvents(10);
+        RecentRegistrations = AttendanceTracker
+            .GetAllAttendanceRecords()
+            .OrderByDescending(x => x.RegistrationDate)
+            .Take(10)
+            .ToList();
+    }
+
+    private void RefreshData()
+    {
+        LoadAnalyticsData();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        AttendanceTracker.OnAttendanceChanged -= RefreshData;
+    }
+}

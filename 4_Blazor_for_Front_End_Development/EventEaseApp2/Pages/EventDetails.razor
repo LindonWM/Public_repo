@@ -1,0 +1,280 @@
+@page "/events/{EventId:int}"
+@using EventEaseApp2.Services
+@inject EventService EventService
+
+<PageTitle>Event Details</PageTitle>
+
+<div class="details-container">
+    @if (CurrentEvent != null)
+    {
+        <div class="details-card">
+            <div class="details-header">
+                <div class="back-button">
+                    <NavLink href="/events" class="btn-back">
+                        <span class="bi bi-chevron-left"></span> Back
+                    </NavLink>
+                </div>
+                <h1 class="details-title">@CurrentEvent.Name</h1>
+            </div>
+
+            <div class="details-content">
+                <div class="detail-section">
+                    <div class="detail-item">
+                        <span class="detail-icon bi bi-calendar-event"></span>
+                        <div class="detail-info">
+                            <p class="detail-label">Date</p>
+                            <p class="detail-value">@CurrentEvent.Date.ToString("MMMM dd, yyyy")</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-icon bi bi-geo-alt-fill"></span>
+                        <div class="detail-info">
+                            <p class="detail-label">Location</p>
+                            <p class="detail-value">@CurrentEvent.Location</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-actions">
+                    <NavLink href="@($"/events/{EventId}/register")" class="btn btn-register-primary">
+                        <span class="bi bi-check-circle-fill"></span> Register Now
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="error-card">
+            <div class="error-icon">
+                <span class="bi bi-exclamation-triangle-fill"></span>
+            </div>
+            <h1>Event Not Found</h1>
+            <p>The event you're looking for (ID: @EventId) doesn't exist or has been removed.</p>
+            
+            <div class="error-actions">
+                <NavLink href="/events" class="btn btn-primary">
+                    <span class="bi bi-arrow-left-circle-fill"></span> View All Events
+                </NavLink>
+                <NavLink href="/" class="btn btn-secondary">
+                    <span class="bi bi-house-fill"></span> Back to Home
+                </NavLink>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .details-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .details-card,
+    .error-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .details-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem 1.5rem;
+        color: white;
+        position: relative;
+    }
+
+    .back-button {
+        margin-bottom: 1rem;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .details-title {
+        font-size: 2rem;
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .details-content {
+        padding: 2rem 1.5rem;
+    }
+
+    .detail-section {
+        margin-bottom: 2rem;
+    }
+
+    .detail-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+    }
+
+    .detail-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .detail-icon {
+        font-size: 1.5rem;
+        color: #667eea;
+        min-width: 1.5rem;
+    }
+
+    .detail-info {
+        flex: 1;
+    }
+
+    .detail-label {
+        margin: 0 0 0.25rem 0;
+        color: #999;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .detail-value {
+        margin: 0;
+        color: #333;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .details-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-register-primary {
+        flex: 1;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .btn-register-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .error-card {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .error-icon {
+        font-size: 3rem;
+        color: #ff8a65;
+        margin-bottom: 1rem;
+    }
+
+    .error-card h1 {
+        color: #333;
+        margin: 0 0 1rem 0;
+        font-size: 1.8rem;
+    }
+
+    .error-card p {
+        color: #666;
+        margin: 0 0 2rem 0;
+        line-height: 1.6;
+    }
+
+    .error-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background: #e0e0e0;
+        color: #000;
+        text-decoration: none;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private EventInfo? CurrentEvent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (EventId <= 0)
+        {
+            CurrentEvent = null;
+            return;
+        }
+
+        CurrentEvent = EventService.GetEventById(EventId);
+    }
+}

@@ -1,0 +1,562 @@
+@page "/events/{EventId:int}/register"
+@using EventEaseApp2.Services
+@inject EventService EventService
+@inject UserSessionService UserSessionService
+@inject AttendanceTrackerService AttendanceTrackerService
+
+<PageTitle>Event Registration</PageTitle>
+
+<div class="registration-container">
+    @if (CurrentEvent != null)
+    {
+        <div class="registration-card">
+            <div class="registration-header">
+                <div class="back-button">
+                    <NavLink href="@($"/events/{EventId}")" class="btn-back">
+                        <span class="bi bi-chevron-left"></span> Back
+                    </NavLink>
+                </div>
+                <h1 class="registration-title">Event Registration</h1>
+                <p class="registration-subtitle">@CurrentEvent.Name</p>
+            </div>
+
+            <div class="registration-content">
+                @if (!IsRegistrationComplete)
+                {
+                    <div class="event-summary">
+                        <div class="summary-detail">
+                            <span class="detail-icon bi bi-calendar-event"></span>
+                            <span>@CurrentEvent.Date.ToString("MMMM dd, yyyy")</span>
+                        </div>
+
+                        <div class="summary-detail">
+                            <span class="detail-icon bi bi-geo-alt-fill"></span>
+                            <span>@CurrentEvent.Location</span>
+                        </div>
+                    </div>
+
+                    <div class="registration-form">
+                        <h2>Your Information</h2>
+                        
+                        <div class="form-group">
+                            <label for="fullName" class="form-label">
+                                <span class="bi bi-person-fill"></span> Full Name
+                            </label>
+                            <input type="text" id="fullName" class="form-control modern-input" 
+                                   @bind:event="oninput" @bind="FullName" maxlength="100" 
+                                   placeholder="Enter your full name" />
+                            <div class="character-count">@FullName.Length / 100</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label">
+                                <span class="bi bi-envelope-fill"></span> Email
+                            </label>
+                            <input type="email" id="email" class="form-control modern-input" 
+                                   @bind:event="oninput" @bind="Email" maxlength="150"
+                                   placeholder="Enter your email" />
+                            <div class="character-count">@Email.Length / 150</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label">
+                                <span class="bi bi-telephone-fill"></span> Phone (Optional)
+                            </label>
+                            <input type="tel" id="phone" class="form-control modern-input" 
+                                   @bind:event="oninput" @bind="Phone" maxlength="20"
+                                   placeholder="Enter your phone number" />
+                            <div class="character-count">@Phone.Length / 20</div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(ErrorMessage))
+                        {
+                            <div class="error-alert">
+                                <span class="bi bi-exclamation-triangle-fill"></span>
+                                <span>@ErrorMessage</span>
+                            </div>
+                        }
+
+                        <div class="form-actions">
+                            <button class="btn btn-register" @onclick="Submit">
+                                <span class="bi bi-check-circle-fill"></span> Complete Registration
+                            </button>
+                            <NavLink href="@($"/events/{EventId}")" class="btn btn-cancel">
+                                <span class="bi bi-x-circle-fill"></span> Cancel
+                            </NavLink>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="success-message">
+                        <span class="success-icon bi bi-check-circle-fill"></span>
+                        <div>
+                            <p class="success-title">Registration Confirmed!</p>
+                            <p class="success-text">Thank you, <strong>@FullName</strong>! You have successfully registered for this event. A confirmation email has been sent to <strong>@Email</strong>.</p>
+                            <p class="session-info">
+                                <span class="bi bi-person-badge"></span>
+                                Active session: You are registered with <strong>@UserSessionService.RegisteredEventCount</strong> event(s)
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="registration-actions">
+                        <NavLink href="/events" class="btn btn-primary">
+                            <span class="bi bi-calendar2-event"></span> View More Events
+                        </NavLink>
+                        <NavLink href="/" class="btn btn-secondary">
+                            <span class="bi bi-house-fill"></span> Go Home
+                        </NavLink>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="error-card">
+            <div class="error-icon">
+                <span class="bi bi-exclamation-circle-fill"></span>
+            </div>
+            <h1>Registration Failed</h1>
+            <p>Unable to complete registration. The event (ID: @EventId) could not be found.</p>
+            
+            <div class="error-actions">
+                <NavLink href="/events" class="btn btn-primary">
+                    <span class="bi bi-arrow-left-circle-fill"></span> View All Events
+                </NavLink>
+                <NavLink href="/" class="btn btn-secondary">
+                    <span class="bi bi-house-fill"></span> Back to Home
+                </NavLink>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .registration-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .registration-card,
+    .error-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .registration-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem 1.5rem;
+        color: white;
+    }
+
+    .back-button {
+        margin-bottom: 1rem;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .registration-title {
+        font-size: 1.8rem;
+        margin: 0 0 0.5rem 0;
+        font-weight: 700;
+    }
+
+    .registration-subtitle {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.95rem;
+    }
+
+    .registration-content {
+        padding: 2rem 1.5rem;
+    }
+
+    .event-summary {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+        margin-bottom: 2rem;
+    }
+
+    .summary-detail {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        color: #555;
+        font-weight: 500;
+    }
+
+    .summary-detail:last-child {
+        margin-bottom: 0;
+    }
+
+    .detail-icon {
+        color: #667eea;
+        font-size: 1.1rem;
+        min-width: 1.1rem;
+    }
+
+    .registration-form {
+        margin-bottom: 2rem;
+    }
+
+    .registration-form h2 {
+        font-size: 1.3rem;
+        color: #333;
+        margin: 0 0 1.5rem 0;
+        font-weight: 700;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-label .bi {
+        color: #667eea;
+        font-size: 1.1rem;
+    }
+
+    .character-count {
+        font-size: 0.8rem;
+        color: #999;
+        margin-top: 0.35rem;
+        text-align: right;
+    }
+
+    .modern-input {
+        width: 100%;
+        padding: 0.875rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .modern-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-register,
+    .btn-cancel {
+        flex: 1;
+        padding: 0.875rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-register {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        color: white;
+    }
+
+    .btn-cancel {
+        background: #f0f0f0;
+        color: #333;
+    }
+
+    .btn-cancel:hover {
+        background: #e0e0e0;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .error-alert {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: #fee;
+        border: 1px solid #fcc;
+        color: #c33;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .error-alert .bi {
+        font-size: 1.2rem;
+    }
+
+    .success-message {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border: 2px solid #667eea;
+        padding: 1.5rem;
+        border-radius: 10px;
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .success-icon {
+        font-size: 2rem;
+        color: #667eea;
+        min-width: 2rem;
+    }
+
+    .success-title {
+        margin: 0 0 0.25rem 0;
+        color: #333;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .success-text {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .session-info {
+        margin: 0.75rem 0 0 0;
+        padding-top: 0.75rem;
+        border-top: 1px solid rgba(102, 126, 234, 0.2);
+        color: #667eea;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .session-info .bi {
+        font-size: 0.95rem;
+    }
+
+    .registration-actions,
+    .error-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background: #e0e0e0;
+        color: #000;
+        text-decoration: none;
+    }
+
+    .error-card {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .error-icon {
+        font-size: 3rem;
+        color: #ff5252;
+        margin-bottom: 1rem;
+    }
+
+    .error-card h1 {
+        color: #333;
+        margin: 0 0 1rem 0;
+        font-size: 1.8rem;
+    }
+
+    .error-card p {
+        color: #666;
+        margin: 0 0 2rem 0;
+        line-height: 1.6;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private EventInfo? CurrentEvent { get; set; }
+    private string FullName = string.Empty;
+    private string Email = string.Empty;
+    private string Phone = string.Empty;
+    private string ErrorMessage = string.Empty;
+    private bool IsRegistrationComplete = false;
+
+    protected override void OnInitialized()
+    {
+        if (EventId <= 0)
+        {
+            CurrentEvent = null;
+            return;
+        }
+
+        CurrentEvent = EventService.GetEventById(EventId);
+    }
+
+    private void Submit()
+    {
+        ErrorMessage = string.Empty;
+
+        // Validate Full Name
+        if (string.IsNullOrWhiteSpace(FullName))
+        {
+            ErrorMessage = "Full name is required.";
+            return;
+        }
+
+        if (FullName.Length > 100)
+        {
+            ErrorMessage = "Full name cannot exceed 100 characters.";
+            return;
+        }
+
+        // Validate Email
+        if (string.IsNullOrWhiteSpace(Email))
+        {
+            ErrorMessage = "Email is required.";
+            return;
+        }
+
+        if (Email.Length > 150)
+        {
+            ErrorMessage = "Email cannot exceed 150 characters.";
+            return;
+        }
+
+        if (!IsValidEmail(Email))
+        {
+            ErrorMessage = "Please enter a valid email address.";
+            return;
+        }
+
+        // Validate Phone (optional, but if provided, check length and format)
+        if (!string.IsNullOrWhiteSpace(Phone))
+        {
+            if (Phone.Length > 20)
+            {
+                ErrorMessage = "Phone number cannot exceed 20 characters.";
+                return;
+            }
+
+            if (!IsValidPhone(Phone))
+            {
+                ErrorMessage = "Please enter a valid phone number (at least 10 digits).";
+                return;
+            }
+        }
+
+        // If all validations pass, start session and mark as complete
+        UserSessionService.StartSession(FullName, Email, Phone);
+        UserSessionService.IncrementRegisteredEventCount();
+        AttendanceTrackerService.RegisterAttendance(EventId, FullName, Email, Phone);
+        IsRegistrationComplete = true;
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private bool IsValidPhone(string phone)
+    {
+        // Remove common phone number separators
+        var cleaned = System.Text.RegularExpressions.Regex.Replace(phone, @"[\s\-\(\)\+]", "");
+        
+        // Check if it contains only digits after cleaning
+        if (!System.Text.RegularExpressions.Regex.IsMatch(cleaned, @"^\d+$"))
+        {
+            return false;
+        }
+
+        // Phone number should have at least 10 digits
+        return cleaned.Length >= 10;
+    }
+}

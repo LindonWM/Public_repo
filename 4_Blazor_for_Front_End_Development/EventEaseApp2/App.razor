@@ -1,0 +1,31 @@
+﻿<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Page not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <div class="not-found-container" style="padding: 2rem; text-align: center;">
+                <h1>404 - Page Not Found</h1>
+                <p style="font-size: 1.1rem; margin: 1rem 0;">Sorry, the page you're looking for doesn't exist.</p>
+                <NavLink href="/" class="btn btn-primary" style="margin-top: 1rem;">Back to Home</NavLink>
+                <NavLink href="/events" class="btn btn-secondary" style="margin-top: 1rem; margin-left: 0.5rem;">View Events</NavLink>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>
+@using EventEaseApp2.Services
+@inject UserSessionService UserSessionService
+@inject AttendanceTrackerService AttendanceTrackerService
+@inject EventService EventService
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Load persisted data from localStorage on app startup
+        await EventService.LoadFromStorageAsync();
+        await UserSessionService.LoadSessionFromStorageAsync();
+        await AttendanceTrackerService.LoadFromStorageAsync();
+    }
+}

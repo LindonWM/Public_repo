@@ -1,0 +1,316 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<div class="home-container">
+    <div class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="bi bi-star-fill"></span>
+                Welcome to EventEase
+            </div>
+            <h1 class="hero-title">Discover Amazing Events</h1>
+            <p class="hero-subtitle">Find, register, and manage events all in one place</p>
+            <NavLink href="/events" class="btn btn-hero">
+                <span class="bi bi-calendar-event"></span> Explore Events
+            </NavLink>
+        </div>
+        <div class="hero-decoration">
+            <div class="decoration-shape shape-1"></div>
+            <div class="decoration-shape shape-2"></div>
+            <div class="decoration-shape shape-3"></div>
+        </div>
+    </div>
+
+    <div class="features-section">
+        <h2 class="section-title">Why Choose EventEase?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="bi bi-search"></span>
+                </div>
+                <h3>Easy Discovery</h3>
+                <p>Browse and discover events that match your interests</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="bi bi-lightning-fill"></span>
+                </div>
+                <h3>Quick Registration</h3>
+                <p>Register for events in just a few clicks</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="bi bi-calendar-check"></span>
+                </div>
+                <h3>Event Management</h3>
+                <p>Manage all your registered events in one place</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <div class="cta-card">
+            <h2>Ready to explore?</h2>
+            <p>Join thousands of event enthusiasts and discover incredible experiences</p>
+            <NavLink href="/events" class="btn btn-cta-primary">
+                <span class="bi bi-arrow-right-circle-fill"></span> Get Started
+            </NavLink>
+        </div>
+    </div>
+</div>
+
+<style>
+    .home-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 0;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-decoration {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .decoration-shape {
+        position: absolute;
+        opacity: 0.1;
+        border-radius: 50%;
+    }
+
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        background: white;
+        top: -100px;
+        right: -100px;
+    }
+
+    .shape-2 {
+        width: 200px;
+        height: 200px;
+        background: white;
+        bottom: -50px;
+        left: -50px;
+    }
+
+    .shape-3 {
+        width: 150px;
+        height: 150px;
+        background: white;
+        top: 50%;
+        left: 10%;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+    }
+
+    .hero-badge span {
+        color: #ffd700;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        margin: 0 0 2rem 0;
+        opacity: 0.95;
+        line-height: 1.6;
+    }
+
+    .btn-hero {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: white;
+        color: #667eea;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-hero:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        color: #667eea;
+        text-decoration: none;
+    }
+
+    .features-section {
+        padding: 4rem 2rem;
+        background: white;
+        margin: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 3rem 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 12px;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        background: #f0f0f0;
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .feature-card h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .feature-card p {
+        color: #666;
+        margin: 0;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    .cta-section {
+        padding: 2rem;
+    }
+
+    .cta-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .cta-card h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+    }
+
+    .cta-card p {
+        font-size: 1rem;
+        margin: 0 0 2rem 0;
+        opacity: 0.95;
+        line-height: 1.6;
+    }
+
+    .btn-cta-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: white;
+        color: #667eea;
+        padding: 0.875rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cta-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        color: #667eea;
+        text-decoration: none;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .features-section {
+            margin: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
