@@ -1,0 +1,54 @@
+GET http://localhost:5084/api/users
+###
+# Create user - Requires valid authentication token
+POST http://localhost:5084/api/users
+Content-Type: application/json
+Authorization: Bearer test-token-123
+
+{
+  "firstName": "Johnny2",
+  "lastName": "Doeson",
+  "email": "john.doe@example.com",
+  "phoneNumber": "+1234567890",
+  "department": "IT",
+  "position": "Developer"
+}
+
+###
+GET http://localhost:5084/api/users/2
+
+###
+GET http://localhost:5084/api/users/999
+
+###
+# Delete user - Requires valid authentication token
+DELETE http://localhost:5084/api/users/1
+Authorization: Bearer test-token-123
+
+###
+# Delete user with invalid token - Should get 401 Unauthorized
+DELETE http://localhost:5084/api/users/2
+Authorization: Bearer invalid-token
+
+###
+# Delete user with missing token - Should get 401 Unauthorized
+DELETE http://localhost:5084/api/users/3
+
+###
+# Update user - Requires valid authentication token
+PUT http://localhost:5084/api/users/2
+Content-Type: application/json
+Authorization: Bearer test-token-123
+
+{
+  "firstName": "Johnny",
+  "lastName": "Doeson",
+  "email": "john.doe4@example.com",
+  "phoneNumber": "+1234567890",
+  "department": "IT",
+  "position": "Developer"
+}
+
+###
+# Trigger unhandled exception (Development only) to verify global 500 response format
+GET http://localhost:5084/api/users/debug/throw

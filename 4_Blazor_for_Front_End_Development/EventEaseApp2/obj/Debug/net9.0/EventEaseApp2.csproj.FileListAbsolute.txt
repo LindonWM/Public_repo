@@ -1484,11 +1484,7 @@ F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\D
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat.gz
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat.gz
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat.gz
-F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\EventEaseApp2.gz6i7d7d4s.wasm
-F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\EventEaseApp2.l0t7f2miys.pdb
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\blazor.boot.json
-F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\EventEaseApp2.gz6i7d7d4s.wasm.gz
-F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\EventEaseApp2.l0t7f2miys.pdb.gz
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\blazor.boot.json.gz
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\EventEaseApp2.staticwebassets.runtime.json
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\EventEaseApp2.staticwebassets.endpoints.json
@@ -2154,9 +2150,6 @@ F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\D
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\compressed\6khf514z52-tjcz0u77k5.gz
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\compressed\bkg4rc1ymx-tptq2av103.gz
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\compressed\branvp9ajq-lfu7j35m59.gz
-F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\compressed\qk1zgb1mbq-gz6i7d7d4s.gz
-F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\compressed\ifunke06xi-l0t7f2miys.gz
-F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\compressed\jbpfs7q40v-374o4koueb.gz
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\staticwebassets.build.json
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\staticwebassets.build.json.cache
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\staticwebassets.development.json
@@ -2166,3 +2159,10 @@ F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\D
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\refint\EventEaseApp2.dll
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\EventEaseApp2.pdb
 F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\ref\EventEaseApp2.dll
+F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\EventEaseApp2.sucj31wp4g.wasm
+F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\EventEaseApp2.10jjf59ydn.pdb
+F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\EventEaseApp2.sucj31wp4g.wasm.gz
+F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\bin\Debug\net9.0\wwwroot\_framework\EventEaseApp2.10jjf59ydn.pdb.gz
+F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\compressed\qk1zgb1mbq-sucj31wp4g.gz
+F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\compressed\ifunke06xi-10jjf59ydn.gz
+F:\PK_praca\Git_Publiczne\4_Blazor_for_Front_End_Development\EventEaseApp2\obj\Debug\net9.0\compressed\jbpfs7q40v-j4b9s4npvb.gz
