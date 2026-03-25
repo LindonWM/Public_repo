@@ -1,0 +1,97 @@
+@page "/fetchproducts"
+@inject HttpClient Http
+@using System.Text.Json
+
+<h3>Product List</h3>
+
+<ul>
+    @if (isLoading)
+    {
+        <li>Loading...</li>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <li>@errorMessage</li>
+    }
+    else if (products.Length == 0)
+    {
+        <li>No products available.</li>
+    }
+    else
+    {
+        foreach (var product in products)
+        {
+            <li>@product.Name - $@product.Price (@product.Category?.Name)</li>
+        }
+    }
+</ul>
+
+@code {
+    private const string ProductsEndpoint = "http://localhost:5249/api/productlist";
+    private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(10);
+    private static readonly JsonSerializerOptions JsonOptions =
+        new(JsonSerializerDefaults.Web);
+
+    // Shared across component instances — survives navigation away and back.
+    private static Product[]? _cache;
+
+    private Product[] products = Array.Empty<Product>();
+    private string? errorMessage;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_cache is not null)
+        {
+            products = _cache;
+            isLoading = false;
+            return;
+        }
+
+        isLoading = true;
+        using var timeoutCts = new CancellationTokenSource(RequestTimeout);
+
+        try
+        {
+            errorMessage = null;
+            var response = await Http.GetAsync(ProductsEndpoint, timeoutCts.Token);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync(timeoutCts.Token);
+            products = JsonSerializer.Deserialize<Product[]>(json, JsonOptions) ?? Array.Empty<Product>();
+            _cache = products;
+        }
+        catch (TaskCanceledException) when (timeoutCts.IsCancellationRequested)
+        {
+            errorMessage = "The product service request timed out.";
+        }
+        catch (JsonException ex)
+        {
+            errorMessage = "The product service returned an invalid response.";
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "The product service is unavailable.";
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private sealed class Product
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public decimal Price { get; set; }
+        public int Stock { get; set; }
+        public Category? Category { get; set; }
+    }
+
+    private sealed class Category
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
+}
