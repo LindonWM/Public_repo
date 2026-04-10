@@ -1,0 +1,65 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@* asp-for tag helpers wire up name/id and antiforgery is added automatically by Razor Pages *@
+
+@if (HttpContext.Request.Query.ContainsKey("ReturnUrl"))
+{
+    <div class="alert alert-warning" role="alert">
+        Access denied — this page requires the <strong>Admin</strong> role.
+    </div>
+}
+
+@if (Model.SuccessMessage != null)
+{
+    <div class="alert alert-success" role="alert">
+        @Model.SuccessMessage
+    </div>
+}
+
+@if (Model.ErrorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+
+@if (Model.IsAuthenticated)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">You are logged in</h5>
+            <p class="card-text mb-1"><strong>Username:</strong> @Model.CurrentUsername</p>
+            <p class="card-text"><strong>Role:</strong> @Model.CurrentRole</p>
+        </div>
+    </div>
+
+    <form method="post" asp-page-handler="Logout">
+        <button type="submit" class="btn btn-outline-secondary">Logout</button>
+    </form>
+}
+else
+{
+    <form method="post">
+        <div class="mb-3">
+            <label asp-for="Username" class="form-label">Username:</label>
+            <input asp-for="Username" type="text" class="form-control" autocomplete="username" />
+            <span asp-validation-for="Username" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label">Password:</label>
+            <input asp-for="Password" type="password" class="form-control" autocomplete="current-password" />
+            <span asp-validation-for="Password" class="text-danger small"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+}
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
