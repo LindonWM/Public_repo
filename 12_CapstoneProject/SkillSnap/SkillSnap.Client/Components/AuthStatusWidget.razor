@@ -1,0 +1,47 @@
+@using SkillSnap.Client.Services
+@inject AuthService AuthService
+@inject UserSessionService UserSession
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<div class="auth-widget">
+    @if (UserSession.IsAuthenticated)
+    {
+        <p class="auth-widget__line auth-widget__line--email">@UserSession.Email</p>
+        <p class="auth-widget__line auth-widget__line--role">Role: @DisplayRole</p>
+        <button class="auth-widget__button" @onclick="LogoutAsync">Logout</button>
+    }
+    else
+    {
+        <p class="auth-widget__line">Not logged in</p>
+        <div class="auth-widget__actions">
+            <a class="auth-widget__link" href="login">Login</a>
+            <a class="auth-widget__link" href="register">Register</a>
+        </div>
+    }
+</div>
+
+@code {
+    private string DisplayRole => UserSession.Roles.Count > 0 ? string.Join(", ", UserSession.Roles) : "-";
+
+    protected override void OnInitialized()
+    {
+        UserSession.SessionChanged += HandleAuthStateChanged;
+    }
+
+    private async Task LogoutAsync()
+    {
+        await AuthService.LogoutAsync();
+        NavigationManager.NavigateTo("/login");
+    }
+
+    private void HandleAuthStateChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        UserSession.SessionChanged -= HandleAuthStateChanged;
+    }
+}

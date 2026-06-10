@@ -1,0 +1,241 @@
+@page "/project-list"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@using SkillSnap.Shared.Models
+@inject SkillSnap.Client.Services.ProjectService ProjectService
+@inject SkillSnap.Client.Services.PortfolioUserService PortfolioUserService
+@inject SkillSnap.Client.Services.AuthService AuthService
+
+<PageTitle>Project List</PageTitle>
+
+<section class="project-list">
+    <h2 class="project-list__title">Projects</h2>
+
+    <div class="project-list__tester">
+        <h3 class="project-list__tester-title">POST Test</h3>
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <p class="project-list__error">@errorMessage</p>
+        }
+        <div class="project-list__tester-grid">
+            <input class="project-list__input" @bind="newProject.Title" placeholder="Title" />
+            <input class="project-list__input" @bind="newProject.Description" placeholder="Description" />
+            <input class="project-list__input" @bind="newProject.ImageUrl" placeholder="ImageUrl" />
+            <select class="project-list__input" @bind="selectedPortfolioUserId">
+                @foreach (var user in portfolioUsers)
+                {
+                    <option value="@user.Id">@user.Name (ID: @user.Id)</option>
+                }
+            </select>
+        </div>
+        <button class="project-list__button" @onclick="AddProjectAsync" disabled="@(!canAddProject)">Add Project (POST)</button>
+    </div>
+
+    @if (projects.Count == 0)
+    {
+        <p class="project-list__empty">No projects to display.</p>
+    }
+    else
+    {
+        <div class="project-list__grid">
+            @foreach (var project in projects)
+            {
+                <article class="project-card">
+                    <img class="project-card__image" src="@(string.IsNullOrWhiteSpace(project.ImageUrl) ? "https://picsum.photos/seed/project-fallback/640/360" : project.ImageUrl)" alt="@project.Title" />
+                    <h3 class="project-card__title">@project.Title</h3>
+                    <p class="project-card__meta"><strong>Id:</strong> @project.Id</p>
+                    <p class="project-card__description"><strong>Description:</strong> @(string.IsNullOrWhiteSpace(project.Description) ? "-" : project.Description)</p>
+                    <p class="project-card__meta"><strong>ImageUrl:</strong> @(string.IsNullOrWhiteSpace(project.ImageUrl) ? "-" : project.ImageUrl)</p>
+                    <p class="project-card__meta"><strong>Portfolio User:</strong> @GetPortfolioUserName(project)</p>
+
+                    @if (IsAdmin)
+                    {
+                        if (editingProjectId == project.Id)
+                        {
+                            <div class="project-card__editor">
+                                <input class="project-list__input" @bind="editProject.Title" placeholder="Title" />
+                                <input class="project-list__input" @bind="editProject.Description" placeholder="Description" />
+                                <input class="project-list__input" @bind="editProject.ImageUrl" placeholder="ImageUrl" />
+                                <select class="project-list__input" @bind="editProject.PortfolioUserId">
+                                    @foreach (var user in portfolioUsers)
+                                    {
+                                        <option value="@user.Id">@user.Name (ID: @user.Id)</option>
+                                    }
+                                </select>
+                                <div class="project-card__actions">
+                                    <button class="project-list__button" @onclick="() => SaveProjectAsync(project.Id)">Save</button>
+                                    <button class="project-list__button project-list__button--ghost" @onclick="CancelEditProject">Cancel</button>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="project-card__actions">
+                                <button class="project-list__button" @onclick="() => BeginEditProject(project)">Edit</button>
+                                <button class="project-list__button project-list__button--danger" @onclick="() => DeleteProjectAsync(project.Id)">Delete</button>
+                            </div>
+                        }
+                    }
+                </article>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private List<Project> projects = [];
+    private List<PortfolioUser> portfolioUsers = [];
+    private Project newProject = new() { Title = "Demo Project" };
+    private Project editProject = new();
+    private int selectedPortfolioUserId;
+    private int? editingProjectId;
+    private string? errorMessage;
+    private bool IsAdmin => AuthService.IsAuthenticated && AuthService.IsInRole("Admin");
+    private bool canAddProject => portfolioUsers.Count > 0 && IsAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadProjectsAsync();
+        portfolioUsers = await PortfolioUserService.GetPortfolioUsersAsync();
+
+        if (portfolioUsers.Count > 0)
+        {
+            selectedPortfolioUserId = portfolioUsers[0].Id;
+        }
+    }
+
+    private async Task AddProjectAsync()
+    {
+        errorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(newProject.Title))
+        {
+            errorMessage = "Project title is required.";
+            return;
+        }
+
+        if (portfolioUsers.Count == 0)
+        {
+            errorMessage = "No portfolio user available. Run /api/seed first.";
+            return;
+        }
+
+        if (!IsAdmin)
+        {
+            errorMessage = "You must be logged in as Admin to add a project.";
+            return;
+        }
+
+        newProject.PortfolioUserId = selectedPortfolioUserId;
+
+        try
+        {
+            await ProjectService.AddProjectAsync(newProject);
+            await ReloadProjectsAsync();
+            newProject = new Project { Title = "" };
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private void BeginEditProject(Project project)
+    {
+        errorMessage = null;
+        editingProjectId = project.Id;
+        editProject = new Project
+        {
+            Title = project.Title,
+            Description = project.Description,
+            ImageUrl = project.ImageUrl,
+            PortfolioUserId = project.PortfolioUserId,
+        };
+    }
+
+    private void CancelEditProject()
+    {
+        editingProjectId = null;
+        editProject = new Project();
+    }
+
+    private async Task SaveProjectAsync(int projectId)
+    {
+        errorMessage = null;
+
+        if (!IsAdmin)
+        {
+            errorMessage = "Only Admin can update projects.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(editProject.Title))
+        {
+            errorMessage = "Project title is required.";
+            return;
+        }
+
+        if (editProject.PortfolioUserId <= 0)
+        {
+            errorMessage = "PortfolioUserId is required.";
+            return;
+        }
+
+        try
+        {
+            await ProjectService.UpdateProjectAsync(projectId, editProject);
+            await ReloadProjectsAsync();
+            CancelEditProject();
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task DeleteProjectAsync(int projectId)
+    {
+        errorMessage = null;
+
+        if (!IsAdmin)
+        {
+            errorMessage = "Only Admin can delete projects.";
+            return;
+        }
+
+        try
+        {
+            await ProjectService.DeleteProjectAsync(projectId);
+            await ReloadProjectsAsync();
+
+            if (editingProjectId == projectId)
+            {
+                CancelEditProject();
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private string GetPortfolioUserName(Project project)
+    {
+        if (!string.IsNullOrWhiteSpace(project.PortfolioUser?.Name))
+        {
+            return project.PortfolioUser.Name;
+        }
+
+        var matchedUser = portfolioUsers.FirstOrDefault(u => u.Id == project.PortfolioUserId);
+        if (!string.IsNullOrWhiteSpace(matchedUser?.Name))
+        {
+            return matchedUser.Name;
+        }
+
+        return $"Unknown user (ID: {project.PortfolioUserId})";
+    }
+
+    private async Task ReloadProjectsAsync()
+    {
+        projects = await ProjectService.GetProjectsAsync();
+    }
+}

@@ -1,0 +1,12 @@
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\bin\Debug\net10.0\SkillSnap.Shared.deps.json
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\bin\Debug\net10.0\SkillSnap.Shared.dll
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\bin\Debug\net10.0\SkillSnap.Shared.pdb
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\obj\Debug\net10.0\SkillSnap.Shared.GeneratedMSBuildEditorConfig.editorconfig
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\obj\Debug\net10.0\SkillSnap.Shared.AssemblyInfoInputs.cache
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\obj\Debug\net10.0\SkillSnap.Shared.AssemblyInfo.cs
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\obj\Debug\net10.0\SkillSnap.Shared.csproj.CoreCompileInputs.cache
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\obj\Debug\net10.0\SkillSnap.Shared.sourcelink.json
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\obj\Debug\net10.0\SkillSnap.Shared.dll
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\obj\Debug\net10.0\refint\SkillSnap.Shared.dll
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\obj\Debug\net10.0\SkillSnap.Shared.pdb
+E:\PK_praca\Kursy\Full_stack\12_CapstoneProject\SkillSnap\SkillSnap.Shared\obj\Debug\net10.0\ref\SkillSnap.Shared.dll

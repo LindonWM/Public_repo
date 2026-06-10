@@ -1,0 +1,51 @@
+.auth-widget {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.75rem;
+    margin: 0.75rem 0.75rem 0.5rem;
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.auth-widget__line {
+    margin: 0;
+    color: #f2f5f9;
+    font-size: 0.82rem;
+    line-height: 1.35;
+}
+
+.auth-widget__line--email {
+    font-weight: 700;
+}
+
+.auth-widget__line--role {
+    color: #c9d8eb;
+}
+
+.auth-widget__actions {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.auth-widget__button,
+.auth-widget__link {
+    width: max-content;
+    border-radius: 0.45rem;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-widget__button {
+    border: 0;
+    background: #d25f45;
+    color: #ffffff;
+}
+
+.auth-widget__link {
+    background: #2e5f99;
+    color: #ffffff;
+}

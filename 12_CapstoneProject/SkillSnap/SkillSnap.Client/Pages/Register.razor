@@ -1,0 +1,144 @@
+@page "/register"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@using SkillSnap.Shared.Models
+@inject SkillSnap.Client.Services.AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register</PageTitle>
+
+<section class="auth-page">
+	<h2 class="auth-page__title">Register</h2>
+
+	@if (!string.IsNullOrWhiteSpace(message))
+	{
+		<p class="auth-page__message @(isError ? "auth-page__message--error" : "auth-page__message--success")">@message</p>
+	}
+
+	<EditForm class="auth-form" Model="model" OnValidSubmit="HandleRegisterAsync">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<label class="auth-form__label">Email</label>
+		<InputText class="auth-form__input" @bind-Value="model.Email" />
+
+		<label class="auth-form__label">Password</label>
+		<InputText class="auth-form__input" type="password" @bind-Value="model.Password" />
+
+		<label class="auth-form__label">Confirm Password</label>
+		<InputText class="auth-form__input" type="password" @bind-Value="model.ConfirmPassword" />
+
+		<button class="auth-form__button" type="submit" disabled="@isSubmitting">
+			@(isSubmitting ? "Registering..." : "Register")
+		</button>
+	</EditForm>
+</section>
+
+<style>
+	.auth-page {
+		max-width: 420px;
+		padding: 1.5rem;
+	}
+
+	.auth-page__title {
+		margin: 0 0 1rem;
+		color: #1a2a3a;
+	}
+
+	.auth-form {
+		display: grid;
+		gap: 0.6rem;
+	}
+
+	.auth-form__label {
+		font-weight: 600;
+		color: #2d3d4f;
+	}
+
+	.auth-form__input {
+		width: 100%;
+		padding: 0.55rem 0.65rem;
+		border: 1px solid #c8d6e5;
+		border-radius: 0.5rem;
+	}
+
+	.auth-form__button {
+		margin-top: 0.4rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #1f4f8a;
+		color: #fff;
+		padding: 0.6rem 0.85rem;
+		font-weight: 600;
+	}
+
+	.auth-page__message {
+		border-radius: 0.5rem;
+		padding: 0.6rem 0.7rem;
+		margin: 0 0 0.8rem;
+	}
+
+	.auth-page__message--error {
+		background: #fdecec;
+		color: #8c1f1f;
+	}
+
+	.auth-page__message--success {
+		background: #eaf8ef;
+		color: #1c6732;
+	}
+</style>
+
+@code {
+	private readonly RegisterModel model = new();
+	private string? message;
+	private bool isError;
+	private bool isSubmitting;
+
+	protected override void OnInitialized()
+	{
+		if (AuthService.IsAuthenticated)
+		{
+			NavigationManager.NavigateTo("/");
+		}
+	}
+
+	private async Task HandleRegisterAsync()
+	{
+		isSubmitting = true;
+		message = null;
+
+		if (!string.Equals(model.Password, model.ConfirmPassword, StringComparison.Ordinal))
+		{
+			isSubmitting = false;
+			isError = true;
+			message = "Password and confirm password do not match.";
+			return;
+		}
+
+		var registerResult = await AuthService.RegisterAsync(model);
+		if (!registerResult.Succeeded)
+		{
+			isSubmitting = false;
+			isError = true;
+			message = registerResult.Message;
+			return;
+		}
+
+		var loginResult = await AuthService.LoginAsync(
+			new LoginModel { Email = model.Email, Password = model.Password }
+		);
+
+		isSubmitting = false;
+
+		if (!loginResult.Succeeded)
+		{
+			isError = true;
+			message = $"Registered, but auto-login failed. {loginResult.Message}";
+			return;
+		}
+
+		isError = false;
+		message = "Registered and logged in successfully.";
+		NavigationManager.NavigateTo("/");
+	}
+}

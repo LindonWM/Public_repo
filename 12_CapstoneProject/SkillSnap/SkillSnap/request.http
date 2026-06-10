@@ -1,0 +1,165 @@
+### Reset users and insert sample data into the database
+POST http://localhost:5272/api/seed
+
+
+### Seed endpoint test with random data payload
+POST http://localhost:5272/api/seed
+Content-Type: application/json
+Accept: application/json
+
+{
+	"requestId": "f91c5d20-4f9b-4a26-9bc6-7d184f3bbf4e",
+	"sentAt": "2026-06-08T12:34:56Z",
+	"user": {
+		"name": "Mila Carter",
+		"bio": "QA payload test for SkillSnap",
+		"profileImageUrl": "https://picsum.photos/seed/mila/200"
+	},
+	"projects": [
+		{
+			"title": "Insight Board",
+			"description": "Dummy project used for endpoint verification",
+			"imageUrl": "https://picsum.photos/seed/board/400/240"
+		},
+		{
+			"title": "Portfolio Preview",
+			"description": "Second random project for request-body testing",
+			"imageUrl": "https://picsum.photos/seed/preview/400/240"
+		}
+	],
+	"skills": [
+		{ "name": "C#", "level": "Intermediate" },
+		{ "name": "Blazor", "level": "Beginner" },
+		{ "name": "SQL", "level": "Advanced" }
+	]
+}
+
+
+###############################################################################
+# AUTH
+###############################################################################
+
+### Register a new user (returns 200 on success, 409 if already exists)
+POST http://localhost:5272/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "newuser@example.com",
+  "password": "User@123!",
+  "confirmPassword": "User@123!"
+}
+
+
+### Register – mismatched passwords (expect 400)
+POST http://localhost:5272/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "newuser@example.com",
+  "password": "User@123!",
+  "confirmPassword": "WrongPassword!"
+}
+
+
+### Login as regular user (expect 200 + JWT)
+POST http://localhost:5272/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "newuser@example.com",
+  "password": "User@123!"
+}
+
+
+### Login as admin (expect 200 + JWT with Admin role)
+POST http://localhost:5272/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@skillsnap.dev",
+  "password": "Admin@123!"
+}
+
+
+### Login with wrong password (expect 401)
+POST http://localhost:5272/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@skillsnap.dev",
+  "password": "WrongPassword!"
+}
+
+
+###############################################################################
+# PORTFOLIO USERS
+###############################################################################
+
+### Get all portfolio users (public)
+GET http://localhost:5272/api/portfoliousers
+
+
+###############################################################################
+# PROJECTS
+###############################################################################
+
+### Get all projects (public)
+GET http://localhost:5272/api/projects
+
+
+### Create a project as Admin (replace <admin-jwt> with token from login response)
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmMmM3MDE5ZS0yMDJhLTQ2M2MtYjEwYi0wMjAyNWRjNzdjZTkiLCJlbWFpbCI6ImFkbWluQHNraWxsc25hcC5kZXYiLCJqdGkiOiJmNTZiMmRiZS1hYzJlLTRkNDYtOGY0MS1lNWU3YTFlZjBhYjQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImYyYzcwMTllLTIwMmEtNDYzYy1iMTBiLTAyMDI1ZGM3N2NlOSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJhZG1pbkBza2lsbHNuYXAuZGV2IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE3ODEwMjg0NDAsImlzcyI6IlNraWxsU25hcC5BcGkiLCJhdWQiOiJTa2lsbFNuYXAuQ2xpZW50In0.N91B4zqTMSHg0WaEzDXE5kHVTUx7sIE8Wm2oppsL6X8
+POST http://localhost:5272/api/projects
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+	"portfolioUserId": 1,
+  "title": "New Project",
+  "description": "Created via HTTP request",
+  "imageUrl": "https://picsum.photos/seed/newproject/640/360"
+}
+
+
+### Create a project without a token (expect 401)
+POST http://localhost:5272/api/projects
+Content-Type: application/json
+
+{
+  "title": "Unauthorized Project",
+  "description": "This should be rejected",
+  "imageUrl": "https://picsum.photos/seed/unauth/640/360"
+}
+
+
+###############################################################################
+# SKILLS
+###############################################################################
+
+### Get all skills (public)
+GET http://localhost:5272/api/skills
+
+
+### Create a skill as Admin (replace <admin-jwt> with token from login response)
+POST http://localhost:5272/api/skills
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+	"portfolioUserId": 1,
+  "name": "TypeScript",
+  "level": "Intermediate"
+}
+
+
+### Create a skill without a token (expect 401)
+POST http://localhost:5272/api/skills
+Content-Type: application/json
+
+{
+  "name": "CSS",
+  "level": "Beginner"
+}
+
+
+

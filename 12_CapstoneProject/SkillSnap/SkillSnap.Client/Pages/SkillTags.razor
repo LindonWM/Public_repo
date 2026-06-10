@@ -1,0 +1,238 @@
+@page "/skill-tags"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@using SkillSnap.Shared.Models
+@inject SkillSnap.Client.Services.SkillService SkillService
+@inject SkillSnap.Client.Services.PortfolioUserService PortfolioUserService
+@inject SkillSnap.Client.Services.AuthService AuthService
+
+<PageTitle>Skill Tags</PageTitle>
+
+<section class="skill-tags">
+	<h2 class="skill-tags__title">Skills</h2>
+
+	<div class="skill-tags__tester">
+		<h3 class="skill-tags__tester-title">POST Test</h3>
+		@if (!string.IsNullOrWhiteSpace(errorMessage))
+		{
+			<p class="skill-tags__error">@errorMessage</p>
+		}
+		<div class="skill-tags__tester-grid">
+			<select class="skill-tags__input" @bind="selectedPortfolioUserId">
+				@foreach (var user in portfolioUsers)
+				{
+					<option value="@user.Id">@user.Name (@user.Id)</option>
+				}
+			</select>
+			<input class="skill-tags__input" @bind="newSkill.Name" placeholder="Name" />
+			<input class="skill-tags__input" @bind="newSkill.Level" placeholder="Level" />
+			<input class="skill-tags__input" @bind="newSkill.IconUrl" placeholder="IconUrl" />
+		</div>
+		<button class="skill-tags__button" @onclick="AddSkillAsync" disabled="@(!canAddSkill)">Add Skill (POST)</button>
+	</div>
+
+	@if (skills.Count == 0)
+	{
+		<p class="skill-tags__empty">No skills to display.</p>
+	}
+	else
+	{
+		<div class="skill-tags__list">
+			@foreach (var skill in skills)
+			{
+				<div class="skill-tag">
+					<div class="skill-tag__content">
+						<strong>@skill.Name</strong>
+						<span>Level: @(string.IsNullOrWhiteSpace(skill.Level) ? "-" : skill.Level)</span>
+						<span>User: @GetPortfolioUserName(skill)</span>
+					</div>
+
+					@if (IsAdmin)
+					{
+						if (editingSkillId == skill.Id)
+						{
+							<div class="skill-tag__editor">
+								<input class="skill-tags__input" value="@skill.Id" readonly />
+								<input class="skill-tags__input" @bind="editSkill.Name" placeholder="Name" />
+								<input class="skill-tags__input" @bind="editSkill.Level" placeholder="Level" />
+								<input class="skill-tags__input" @bind="editSkill.IconUrl" placeholder="IconUrl" />
+								<select class="skill-tags__input" @bind="editSkill.PortfolioUserId">
+									@foreach (var user in portfolioUsers)
+									{
+										<option value="@user.Id">@user.Name (@user.Id)</option>
+									}
+								</select>
+								<div class="skill-tag__actions">
+									<button class="skill-tags__button" @onclick="() => SaveSkillAsync(skill.Id)">Save</button>
+									<button class="skill-tags__button skill-tags__button--ghost" @onclick="CancelEditSkill">Cancel</button>
+								</div>
+							</div>
+						}
+						else
+						{
+							<div class="skill-tag__actions">
+								<button class="skill-tags__button" @onclick="() => BeginEditSkill(skill)">Edit</button>
+								<button class="skill-tags__button skill-tags__button--danger" @onclick="() => DeleteSkillAsync(skill.Id)">Delete</button>
+							</div>
+						}
+					}
+				</div>
+			}
+		</div>
+	}
+</section>
+
+@code {
+	private List<Skill> skills = [];
+	private List<PortfolioUser> portfolioUsers = [];
+	private Skill newSkill = new() { Name = "Demo Skill" };
+	private Skill editSkill = new();
+	private int selectedPortfolioUserId;
+	private int? editingSkillId;
+	private string? errorMessage;
+	private bool IsAdmin => AuthService.IsAuthenticated && AuthService.IsInRole("Admin");
+	private bool canAddSkill => portfolioUsers.Count > 0 && IsAdmin;
+
+	protected override async Task OnInitializedAsync()
+	{
+		portfolioUsers = await PortfolioUserService.GetPortfolioUsersAsync();
+		selectedPortfolioUserId = portfolioUsers.FirstOrDefault()?.Id ?? 0;
+
+		await ReloadSkillsAsync();
+	}
+
+	private async Task AddSkillAsync()
+	{
+		errorMessage = null;
+
+		if (string.IsNullOrWhiteSpace(newSkill.Name))
+		{
+			errorMessage = "Skill name is required.";
+			return;
+		}
+
+		if (selectedPortfolioUserId <= 0)
+		{
+			errorMessage = "No portfolio user available. Run /api/seed first.";
+			return;
+		}
+
+		if (!IsAdmin)
+		{
+			errorMessage = "You must be logged in as Admin to add a skill.";
+			return;
+		}
+
+		newSkill.PortfolioUserId = selectedPortfolioUserId;
+
+		try
+		{
+			await SkillService.AddSkillAsync(newSkill);
+			await ReloadSkillsAsync();
+			newSkill = new Skill { Name = "" };
+		}
+		catch (HttpRequestException ex)
+		{
+			errorMessage = ex.Message;
+		}
+	}
+
+	private void BeginEditSkill(Skill skill)
+	{
+		errorMessage = null;
+		editingSkillId = skill.Id;
+		editSkill = new Skill
+		{
+			Name = skill.Name,
+			Level = skill.Level,
+			IconUrl = skill.IconUrl,
+			PortfolioUserId = skill.PortfolioUserId,
+		};
+	}
+
+	private void CancelEditSkill()
+	{
+		editingSkillId = null;
+		editSkill = new Skill();
+	}
+
+	private async Task SaveSkillAsync(int skillId)
+	{
+		errorMessage = null;
+
+		if (!IsAdmin)
+		{
+			errorMessage = "Only Admin can update skills.";
+			return;
+		}
+
+		if (string.IsNullOrWhiteSpace(editSkill.Name))
+		{
+			errorMessage = "Skill name is required.";
+			return;
+		}
+
+		if (editSkill.PortfolioUserId <= 0)
+		{
+			errorMessage = "PortfolioUserId is required.";
+			return;
+		}
+
+		try
+		{
+			await SkillService.UpdateSkillAsync(skillId, editSkill);
+			await ReloadSkillsAsync();
+			CancelEditSkill();
+		}
+		catch (HttpRequestException ex)
+		{
+			errorMessage = ex.Message;
+		}
+	}
+
+	private async Task DeleteSkillAsync(int skillId)
+	{
+		errorMessage = null;
+
+		if (!IsAdmin)
+		{
+			errorMessage = "Only Admin can delete skills.";
+			return;
+		}
+
+		try
+		{
+			await SkillService.DeleteSkillAsync(skillId);
+			await ReloadSkillsAsync();
+
+			if (editingSkillId == skillId)
+			{
+				CancelEditSkill();
+			}
+		}
+		catch (HttpRequestException ex)
+		{
+			errorMessage = ex.Message;
+		}
+	}
+
+	private string GetPortfolioUserName(Skill skill)
+	{
+		if (!string.IsNullOrWhiteSpace(skill.PortfolioUser?.Name))
+		{
+			return skill.PortfolioUser.Name;
+		}
+
+		var matchedUser = portfolioUsers.FirstOrDefault(u => u.Id == skill.PortfolioUserId);
+		if (!string.IsNullOrWhiteSpace(matchedUser?.Name))
+		{
+			return matchedUser.Name;
+		}
+
+		return "Unknown user";
+	}
+
+	private async Task ReloadSkillsAsync()
+	{
+		skills = await SkillService.GetSkillsAsync();
+	}
+}

@@ -1,0 +1,103 @@
+@page "/profile-card"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@using SkillSnap.Shared.Models
+@inject SkillSnap.Client.Services.PortfolioUserService PortfolioUserService
+
+<PageTitle>Profile Card</PageTitle>
+
+<h1>Profile Card</h1>
+
+@if (portfolioUsers.Count == 0)
+{
+	<p>No profiles available.</p>
+}
+else
+{
+	<div class="profile-grid">
+		@foreach (var user in portfolioUsers)
+		{
+			<div class="profile-card">
+				<img class="profile-card__image" src="@GetImageUrl(user)" alt="@GetName(user)" />
+
+				<div class="profile-card__content">
+					<h2 class="profile-card__name">@GetName(user)</h2>
+					<p class="profile-card__bio">@GetBio(user)</p>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+<style>
+	.profile-grid {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.profile-card {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+		max-width: 32rem;
+		padding: 1.25rem;
+		border: 1px solid #d9dee6;
+		border-radius: 1rem;
+		background: linear-gradient(180deg, #ffffff 0%, #f6f9fc 100%);
+		box-shadow: 0 12px 30px rgba(28, 44, 64, 0.08);
+	}
+
+	.profile-card__image {
+		width: 96px;
+		height: 96px;
+		object-fit: cover;
+		border-radius: 50%;
+		flex-shrink: 0;
+		border: 3px solid #ffffff;
+		box-shadow: 0 4px 12px rgba(28, 44, 64, 0.12);
+	}
+
+	.profile-card__content {
+		min-width: 0;
+	}
+
+	.profile-card__name {
+		margin: 0 0 0.5rem;
+		font-size: 1.4rem;
+		line-height: 1.2;
+		color: #1a2a3a;
+	}
+
+	.profile-card__bio {
+		margin: 0;
+		color: #516173;
+		line-height: 1.5;
+	}
+
+	@@media (max-width: 576px) {
+		.profile-card {
+			flex-direction: column;
+			text-align: center;
+		}
+	}
+</style>
+
+@code {
+	private List<PortfolioUser> portfolioUsers = [];
+
+	protected override async Task OnInitializedAsync()
+	{
+		portfolioUsers = await PortfolioUserService.GetPortfolioUsersAsync();
+	}
+
+	private static string GetName(PortfolioUser? user) => string.IsNullOrWhiteSpace(user?.Name)
+		? "No profile available"
+		: user.Name;
+
+	private static string GetBio(PortfolioUser? user) => string.IsNullOrWhiteSpace(user?.Bio)
+		? "Bio is not available."
+		: user.Bio;
+
+	private static string GetImageUrl(PortfolioUser? user) => string.IsNullOrWhiteSpace(user?.ProfileImageUrl)
+		? "https://picsum.photos/seed/profile-fallback/300/300"
+		: user.ProfileImageUrl;
+}

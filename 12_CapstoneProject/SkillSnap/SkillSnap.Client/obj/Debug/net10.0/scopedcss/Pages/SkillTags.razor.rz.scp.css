@@ -1,0 +1,139 @@
+.skill-tags[b-5e61gel73j] {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem clamp(1rem, 2.6vw, 2.25rem);
+}
+
+.skill-tags__title[b-5e61gel73j] {
+    margin: 0 0 1.25rem;
+    font-size: clamp(1.45rem, 2.2vw, 1.95rem);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    color: #1a2a3a;
+}
+
+.skill-tags__list[b-5e61gel73j] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.skill-tag[b-5e61gel73j] {
+    display: grid;
+    gap: 0.6rem;
+    padding: 0.9rem 1rem;
+    border-radius: 0.95rem;
+    background: #eaf3ff;
+    border: 1px solid #c8defc;
+    color: #1f4f8a;
+    box-shadow: 0 8px 18px rgba(31, 79, 138, 0.08);
+}
+
+.skill-tag__content[b-5e61gel73j] {
+    display: grid;
+    gap: 0.3rem;
+    font-size: 0.95rem;
+}
+
+.skill-tag__content strong[b-5e61gel73j] {
+    font-size: 1.08rem;
+    line-height: 1.25;
+}
+
+.skill-tags__empty[b-5e61gel73j] {
+    margin: 0;
+    font-size: 1rem;
+    color: #516173;
+}
+
+.skill-tags__tester[b-5e61gel73j] {
+    margin: 0 0 1.5rem;
+    padding: 1.1rem;
+    border: 1px dashed #b7c5d6;
+    border-radius: 0.9rem;
+    background: #f8fbff;
+}
+
+.skill-tags__tester-title[b-5e61gel73j] {
+    margin: 0 0 0.85rem;
+    font-size: 1.04rem;
+    color: #1a2a3a;
+}
+
+.skill-tags__tester-grid[b-5e61gel73j] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+}
+
+.skill-tags__input[b-5e61gel73j] {
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.58rem 0.72rem;
+    font-size: 0.96rem;
+    border: 1px solid #c8d6e5;
+    border-radius: 0.5rem;
+}
+
+.skill-tags__input:focus-visible[b-5e61gel73j] {
+    outline: 2px solid rgba(31, 79, 138, 0.25);
+    outline-offset: 1px;
+}
+
+.skill-tags__button[b-5e61gel73j] {
+    border: 0;
+    border-radius: 0.5rem;
+    background: #1f4f8a;
+    color: #fff;
+    padding: 0.6rem 0.95rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.skill-tags__button--danger[b-5e61gel73j] {
+    background: #9f2a2a;
+}
+
+.skill-tags__button--ghost[b-5e61gel73j] {
+    background: #5f6e80;
+}
+
+.skill-tag__actions[b-5e61gel73j] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.skill-tag__editor[b-5e61gel73j] {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.skill-tags__error[b-5e61gel73j] {
+    margin: 0 0 0.75rem;
+    padding: 0.58rem 0.7rem;
+    font-size: 0.94rem;
+    border-radius: 0.4rem;
+    background: #fdecec;
+    color: #8c1f1f;
+}
+
+@media (max-width: 640px) {
+    .skill-tags[b-5e61gel73j] {
+        padding: 1.35rem 0.95rem;
+    }
+
+    .skill-tags__list[b-5e61gel73j] {
+        grid-template-columns: 1fr;
+    }
+
+    .skill-tag[b-5e61gel73j] {
+        padding: 0.85rem 0.9rem;
+    }
+
+    .skill-tags__button[b-5e61gel73j] {
+        width: 100%;
+    }
+}
